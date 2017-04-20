@@ -43,7 +43,7 @@ def extract_problem(xy_customers, xy_icps, xy_crcs, xy_pc, q):
     # collected product
     U = []
     for i in range(I):
-        U.append(Uq[0][i] + Uq[1][i] + Uq[2][i])
+        U.append(q[0][i] + q[1][i] + q[2][i])
     
     # fixed setup cost
     FCT = [100 for i in range(J)]

@@ -1,9 +1,17 @@
 import cplex
 
-def cplex_solve(obj,ub,lb,colnames,types, rows, senses, rhs, minimize=True, path=None):
+def cplex_solve(obj,ub,lb,colnames,types, rows, senses, rhs, minimize=True, path=None, verbose=False):
     #####################################################################
     # Creating problem
     prob = cplex.Cplex()
+    
+    #Disable logging
+    if not verbose:
+        prob.set_log_stream(None)
+        prob.set_error_stream(None)
+        prob.set_warning_stream(None)
+        prob.set_results_stream(None)
+    
     ## Objective function sense
     if minimize:
         prob.objective.set_sense(prob.objective.sense.minimize)
