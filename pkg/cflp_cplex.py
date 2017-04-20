@@ -41,7 +41,7 @@ def cflp_cplex(I,J,
         [[X(i,j) for j in range(J)], [1 for j in range(J)]]
         for i in range(I)]
     c2 = [
-        [[X(i,j) for i in range(J)]+[Z(j)], [q[i] for i in range(J)]+[-V[j]]] 
+        [[X(i,j) for i in range(I)]+[Z(j)], [q[i] for i in range(I)]+[-V[j]]] 
         for j in range(J)]
     
     s1 = "E" * I

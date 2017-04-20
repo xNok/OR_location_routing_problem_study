@@ -29,7 +29,7 @@ def crab_mb_m_cplex(I,J,C,B,K,V,
     # Decision variables
     
     def Y(i,j):
-        return "X_" + str(i) + "_" + str(j)
+        return "Y_" + str(i) + "_" + str(j)
     
     def Z(i,j,c):
         return "Z_" + str(i) + "_" + str(j) + "_" + str(c)
@@ -115,9 +115,9 @@ def crab_mb_m_cplex(I,J,C,B,K,V,
     r12 = [Q[1][b] for b in B]
     
     # Zs VRP constraints
-    rows   = c2
-    senses = s2
-    rhs    = r2
+    rows   = c2+c4
+    senses = s2+s4
+    rhs    = r2+r4
     
     #####################################################################
     # Bounds
