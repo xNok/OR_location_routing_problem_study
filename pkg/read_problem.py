@@ -35,9 +35,12 @@ def extract_problem(xy_customers, xy_icps, xy_crcs, xy_pc, q):
     K = 3
     V = 3
     
+    xy_c_j = xy_crcs+xy_icps
+    
     # distance cost
     W = [[m.sqrt((cus[0]-icp[0])**2 + (cus[1]-icp[1])**2) for icp in xy_icps] for cus in xy_customers]
-    Dcj = [[m.sqrt((icp[0]-crc[0])**2 + (icp[1]-crc[1])**2) for crc in xy_crcs] for icp in xy_icps ]
+    Dcj = [[m.sqrt((c[0]-j[0])**2 + (c[1]-j[1])**2) for c in xy_crcs] for j in xy_icps ]
+    DcUj = [[m.sqrt((c[0]-j[0])**2 + (c[1]-j[1])**2) for c in xy_c_j] for j in xy_c_j ]
     Dc = [m.sqrt((xy_pc[0]-crc[0])**2 + (xy_pc[1]-crc[1])**2) for crc in xy_crcs]
     
     # collected product
@@ -48,6 +51,6 @@ def extract_problem(xy_customers, xy_icps, xy_crcs, xy_pc, q):
     # fixed setup cost
     FCT = [100 for i in range(J)]
     FCR = [200 for i in range(C)]
-    FCV = [300 for i in range(V)]
+    FCV = [300 for i in range(B)]
     
-    return I,J,C,B,K,V,W,Dcj,Dc,FCV,FCT,FCR,U
+    return I,J,C,B,K,V,W,DcUj,Dcj,Dc,FCV,FCT,FCR,U
