@@ -1,4 +1,6 @@
 
+import numpy as np
+
 def capacity_vector(Y,U,J,Q):
     cluster_q = np.zeros(J)
     violated = []

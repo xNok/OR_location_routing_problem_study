@@ -2,7 +2,7 @@
 def draw_solution_II(I,J,C,
                     N_crc, N_icp,
                     Y1,Y2, routes, expid,
-                    G, pos, labels, colors, size):
+                    G, pos, labels, colors, size, path=None):
     
     from IPython.display import display, HTML
     import pandas as pd
@@ -19,7 +19,7 @@ def draw_solution_II(I,J,C,
     ###############################
     # Network
     G2 = G.copy()
-    colors = colors[:];size = size[:];
+    colors = colors[:];size = size[:]; labels = labels.copy()
     # ICP-Cus
     for j,vj in enumerate(Y1):
         for i,vi in enumerate(vj):
@@ -49,4 +49,6 @@ def draw_solution_II(I,J,C,
         for c, vc in enumerate(vr):
             G2.add_edge(I+vc[0],I+vc[1])
 
-        lrp_draw_and_save(G2, pos, labels, colors, size, expid+"/cflp_cplex.png")
+    lrp_draw_and_save(G2, pos, labels, colors, size, path)
+    
+    return G2
