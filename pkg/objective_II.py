@@ -21,13 +21,13 @@ def objective_II(Y,Z,Nj,Nc,
     sum2_1 = 0
     for i in range(I):
         for j in range(J):
-            sum2_1 += w[i][j] + Y[i][j]
+            sum2_1 += w[i][j] * Y[i][j]
     
     sum2_2 = 0
     for c in range(C+J):
         for j in range(C+J):
             for b in range(B):
-                sum2_2 += (Dcj[c][j] + FCV[b]) * Z[c][j][b]
+                sum2_2 += (Dcj[c][j]) * Z[c][j][b]
                 
     sum2_3 = 0
     for j in range(J):
@@ -35,6 +35,6 @@ def objective_II(Y,Z,Nj,Nc,
         
     sum2_4 = 0
     for c in range(C):
-        sum2_4 += (FCT[c] + D[c]) * N[c]
+        sum2_4 += (FCT[c] + Dc[c] + FCV[c]) * N[c]
       
     return sum2_1+sum2_2+sum2_3+sum2_4, sum2_1, sum2_2, sum2_3, sum2_4
