@@ -1,11 +1,12 @@
 
-def cflp_first_tsp_second(G,pos, labels, colors, size,
+def pmd_first_tsp_second(G,pos, labels, colors, size,
                 I,J,C,
                 W1,W2,W3,F1,F2,
                 U,Q_icp,Q_crc,
                 plots=True, expid=""):
     
     from pkg.cflp_cplex import cflp_cplex
+    from pkg.pm_flp_cplex import pm_flp_cplex
     from pkg.tsp_cplex import tsp_cplex
     from pkg.read_problem import read_problem, extract_problem
     from pkg.draw_solution_II import draw_solution_II
@@ -16,8 +17,8 @@ def cflp_first_tsp_second(G,pos, labels, colors, size,
 
     #######################################################################
     # Solve first problem
-    prob1, Y1, N_icp = cflp_cplex(I,J,
-                W1,F1,U,Q_icp,
+    prob1, Y1, N_icp = pm_flp_cplex(I,J,
+                W1,8,
                 relaxation=False)
     
     #######################################################################
@@ -31,10 +32,12 @@ def cflp_first_tsp_second(G,pos, labels, colors, size,
         for i in range(I):
             sqi += U[i]*Y1[i][j]
         u2.append(sqi)
+        
+    print(u2)
     #######################################################################        
     # Solve Second problem
-    prob2, Y2, N_crc = cflp_cplex(len(u2),C,
-            c2,F2,u2,Q_crc,
+    prob2, Y2, N_crc = pm_flp_cplex(len(u2),C,
+            c2,2,
             relaxation=False)    
     #######################################################################
     # Preparing TSP
@@ -66,8 +69,8 @@ def cflp_first_tsp_second(G,pos, labels, colors, size,
     #######################################################################
     # Draw solution
     if(plots):
-        draw_solution_II(I,J,C,N_crc, N_icp,
+         draw_solution_II(I,J,C,N_crc, N_icp,
                     Y1,Y2, routes, expid,
                     G, pos, labels, colors, size)
-    
-    return Y1, Y2, N_icp, N_crc, routes
+            
+    return Y1, Y2 , N_icp, N_crc, routes
