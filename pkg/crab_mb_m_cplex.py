@@ -5,7 +5,7 @@ import networkx as nx           # network representation library
 import cplex
 
 def crab_mb_m_cplex(I,J,C,B,K,V,
-            w,Dcj,FCV,FCT,FCR,Dc,q,
+            w,Djc,FCV,FCT,FCR,Dc,q,
             Q,relaxation=False,path=None):
     """
     Parameters:
@@ -16,7 +16,7 @@ def crab_mb_m_cplex(I,J,C,B,K,V,
             IP, PC acquisition and processiong cost
          Weight:
             q, nbr unit collected
-            w, Dcj, Dc cost related to traveling distances cus-ICP, ICP-CRC, CRC-PC
+            w, Djc, Dc cost related to traveling distances cus-ICP, ICP-CRC, CRC-PC
         Capacity:
             Q capacity matrix
      
@@ -60,14 +60,14 @@ def crab_mb_m_cplex(I,J,C,B,K,V,
     }
     Zs = {
         "name" : [Z(c,j,b) for c in CuJ for j in CuJ for b in B],
-        "coef" : [Dcj[c][j]+FCV[b] for c in CuJ for j in CuJ for b in B],
+        "coef" : [Djc[c][j] for c in CuJ for j in CuJ for b in B],
         "type" : ["I" for c in CuJ for j in CuJ for b in B],
         "ub"   : [1 for c in CuJ for j in CuJ for b in B],
         "lb"   : [0 for c in CuJ for j in CuJ for b in B],
     }
     Ns = {
         "name" : [N(j) for j in J] + [N(c) for c in C],
-        "coef" : [FCT[j] for j in J] + [FCR[c-len(J)]+Dc[c-len(J)] for c in C],
+        "coef" : [FCT[j] for j in J] + [FCR[c-len(J)]+Dc[c-len(J)]+FCV[c-len(J)] for c in C],
         "type" : ["I" for j in J] + ["I" for c in C],
         "ub"   : [1 for j in J] + [1 for c in C],
         "lb"   : [0 for j in J] + [0 for c in C],
@@ -170,9 +170,9 @@ def crab_mb_m_cplex(I,J,C,B,K,V,
     c13 = {
         "lin_expr": [[[U(c),U(j)]+[Z(c,j,b) for b in B],
                       [1,-1]+[len(J)+len(C) for b in B]] 
-        for c in CuJ for j in CuJ if c!=j],
-        "senses"  : ["L" for c in CuJ for j in CuJ if c!=j],
-        "rhs"     : [len(J)+len(C)-1 for c in CuJ for j in CuJ if c!=j]
+        for c in J for j in J if c!=j],
+        "senses"  : ["L" for c in J for j in J if c!=j],
+        "rhs"     : [len(J)+len(C)-1 for c in J for j in J if c!=j]
     }
     c14 = {
         "lin_expr": [[[Z(c,j,b) for c in CuJ if c!=j]+[Z(j,c,b) for c in CuJ if c!=j], 

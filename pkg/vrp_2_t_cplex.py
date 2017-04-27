@@ -87,9 +87,9 @@ def vrp_2_t_cplex(I,J,B,
     c4 = {
         "lin_expr": [[[U(i),U(j)]+[X(i,j,b) for b in B],
                       [1,-1]+[len(I)+len(J) for b in B]] 
-        for i in IuJ for j in IuJ if i!=j],
-        "senses"  : ["L" for i in IuJ for j in IuJ if i!=j],
-        "rhs"     : [len(I)+len(J)-1 for i in IuJ for j in IuJ if i!=j]
+        for i in I for j in I if i!=j],
+        "senses"  : ["L" for i in I for j in I if i!=j],
+        "rhs"     : [len(I)+len(J)-1 for i in I for j in I if i!=j]
     }
 
     # Zs VRP constraints
