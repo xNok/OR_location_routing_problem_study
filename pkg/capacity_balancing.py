@@ -9,7 +9,7 @@ def capacity_balancing(Y,W,U,J,Q,N_icp):
     # capacity balancing
     Ycp = np.copy(Y)
     Wcp = np.copy(W)
-    while l != 0 or max_loop == 0:
+    while l != 0:
         max_loop +=-1
         j = capacity_vector(Ycp,U,J,Q)[1][0]
         i = np.argmax(np.multiply(Ycp,W)[:,j])
