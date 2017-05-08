@@ -1,6 +1,23 @@
 import cplex
 
-def cplex_solve(obj,ub,lb,colnames,types, rows, senses, rhs, minimize=True, path=None, verbose=False):
+def cplex_solve(variables,constraints, minimize=True, path=None, verbose=False):
+    
+    #####################################################################
+    # Extract variables
+    obj = [];ub = [];lb = [];colnames = [];types = [];
+    for v in variables:
+        obj      = obj + v["coef"]
+        ub       = ub  + v["ub"]
+        lb       = lb  + v["lb"]
+        colnames = colnames + v["name"]
+        types    = types + v["type"]
+    #####################################################################
+    # Extract constraints
+    rows = []; senses = []; rhs = [];
+    for c in vonstraints:
+        rows   = rows   + c["lin_expr"]
+        senses = senses + c["senses"]
+        rhs    = rhs    + c["rhs"]
     #####################################################################
     # Creating problem
     prob = cplex.Cplex()
