@@ -53,7 +53,7 @@ def uflp_cplex(I,J,
     c1 = {
         "lin_expr": [[[X(i,j),Z(j)], [1,-1]]
                      for i in range(I) for j in range(J)],
-        "senses"  : ["E" for i in range(I) for j in range(J)],
+        "senses"  : ["L" for i in range(I) for j in range(J)],
         "rhs"     : [0 for i in range(I) for j in range(J)]
     }
     
