@@ -5,9 +5,9 @@ import networkx as nx           # network representation library
 
 def tuflp_cplex(I,V1,V2,
             c,f,
-            relaxation=False,path=None):
+            relaxation=False,path=None,verbose=False):
     """
-    I,J,C sets of customers, ICPs, CRCs
+    I,V1,V2 number of customers, level 1 facility, level 2 facility
     c,f cost matrix for connection and setup
     """
     #####################################################################
@@ -18,61 +18,62 @@ def tuflp_cplex(I,V1,V2,
 
     def Z(j,r):
         return "Z_" + str(j) + "_" + str(r)
+    
+    nbr_var = I*V1*V2+(V1+V2)
+    I = range(I); V1 = range(V1); V2 = range(V2);
 
     #####################################################################
     # Objective function
     
-    objx = [c[i][j1][j2]  for i in range(I) for j1 in range(V1) for j2 in range(V2)]
-    objz = [f[j] for j in range(V1+V2)]
+    Xs = {
+        "name" : [X(i,j) for i in I for j1 in V1 for j2 in V2],
+        "coef" : [c[i][j1][j2] for i in I for j1 in V1 for j2 in V2],
+        "type" : ["C" if relaxation else "I" for i in I for j1 in V1 for j2 in V2],
+        "ub"   : [1 for i in I for j1 in V1 for j2 in V2],
+        "lb"   : [0 for i in I for j1 in V1 for j2 in V2],
+    }
     
-    ## variablesnames
-    Xs = [ X(i,j1,j2) for i in range(I) for j1 in range(V1) for j2 in range(V2)]
-    Zs = [ Z(j,1) for j in range(V1)] + [ Z(j,2) for j in range(V2)]
-
-    ## Objective function sum aggregation
-    obj = objx + objz
-    colnames = Xs + Zs
-    if relaxation:
-        types    = "C" * (I*V1*V2+(V1+V2)) #Integrality constraint
-    else:
-        types    = "I" * (I*V1*V2+(V1+V2)) #Integrality constraint
+    Zs = {
+        "name" : [Z(j) for j in range(len(V1)+len(V2))],
+        "coef" : [f[j] for j in range(len(V1)+len(V2))],
+        "type" : ["C" if relaxation else "I" for j in range(len(V1)+len(V2))],
+        "ub"   : [1 for j in range(len(V1)+len(V2))],
+        "lb"   : [0 for j in range(len(V1)+len(V2))],
+    }
 
     #####################################################################
     # Constraints
     
-    c1 = [
-            [[X(i,j1,j2) for j1 in range(V1) for j2 in range(V2)], [1 for j in range(V1*V2)]] 
-          for i in range(I)]
-    c2 = [
-            [[X(i,j1,j2) for j1 in range(V1)]+[Z(j2,2)], [1 for j1 in range(V1)]+ [-1]]
-          for i in range(I) for j2 in range(V2)]
-    c3 = [
-            [[X(i,j1,j2) for j2 in range(V2)]+[Z(j1,1)], [1 for j2 in range(V2)]+ [-1]]
-          for i in range(I) for j1 in range(V1)]
+    c1 = {
+        "lin_expr": [[[X(i,j1,j2) for j1 in V1 for j2 in V2], [1 for j1 in V1 for j2 in V2]] 
+          for i in range(I)],
+        "senses"  : ["E" for i in range(I)],
+        "rhs"     : [0 for i in range(I)]
+    }
     
-    s1 = "E" * I
-    s2 = "L" * (I*V1)
-    s3 = "L" * (I*V2)
+    c2 = {
+        "lin_expr": [[[X(i,j1,j2) for j1 in V1]+[Z(j2,2)], [1 for j1 in V1]+ [-1]]
+          for i in I for j2 in V2],
+        "senses"  : ["L" for i in I for j2 in V2],
+        "rhs"     : [0 for i in I for j2 in V2]
+    }
     
-    r1 = [1 for i in range(I)]
-    r2 = [0 for i in range(I) for j2 in range(V2)]
-    r3 = [0 for i in range(I) for j1 in range(V1)]
+    c3 = {
+        "lin_expr": [[[X(i,j1,j2) for j2 in V2]+[Z(j1,1)], [1 for j2 in V2]+ [-1]]
+          for i in I for j1 in V1],
+        "senses"  : ["L" for i in I for j1 in V1],
+        "rhs"     : [0 for i in I for j1 in V1]
+    }
     
-    rows = c1+c2+c3
-    senses = s1+s2+s3
-    rhs =  r1+r2+r3
-    
-    #####################################################################
-    # Bounds
-    ub = [1 for i in range(I*V1*V2+(V1+V2))]
-    lb = [0 for i in range(I*V1*V2+(V1+V2))]
+    constraints = [c1, c2, c3]
 
     #####################################################################
     # Solving
-    prob = cplex_solve(obj,ub,lb,colnames,types, rows, senses, rhs, minimize=True, path=path)
-
+    prob = cplex_solve(variables,constraints,
+                       minimize=True, path=path, verbose=verbose)
     #####################################################################
     # Extract solution
+    I = len(I); V1 = len(V1); V2 = len(V2);
     solution = prob.solution.get_values()
     X = np.reshape(solution[0:I*V1*V2],(I,V1,V2))
     Z = solution[I*V1*V2:]
