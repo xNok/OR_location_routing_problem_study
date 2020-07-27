@@ -21,3 +21,7 @@ This repository contains an implemetation of several MIP concerning the Location
 ## Creating your own script
 
 You can can use the following template to easily formulate
+
+## Dependencies
+
+I created a custom wrapper around the cplex python API that I use in the above examples: https://github.com/xNok/OR_CPLEX_solve
